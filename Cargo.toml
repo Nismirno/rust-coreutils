@@ -1,0 +1,21 @@
+[package]
+name = "cli_tools"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+colored = "2.0.4"
+
+[[bin]]
+name = "echo"
+path = "src/echo/bin/main.rs"
+
+[[bin]]
+name = "cat"
+path = "src/cat/bin/main.rs"
+
+[[bin]]
+name = "ls"
+path = "src/ls/bin/main.rs"
