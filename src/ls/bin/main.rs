@@ -66,12 +66,38 @@ fn main() {
     let entries: DirItems = read_dir(dir_path).unwrap().collect();
 
     match flags.list_format {
-        ListingFormat::Long => todo!(),
+        ListingFormat::Long => long_print(&entries, &flags),
         ListingFormat::Commas => todo!(),
         ListingFormat::Horizontal => simple_print(&entries, &flags),
         ListingFormat::Vertical => todo!(),
     }
     
+}
+
+fn long_print(entries: &DirItems, flags: &UsedFlags) {
+    for entry in entries {
+        let item = entry.as_ref().unwrap();
+        let file_meta = metadata(&item.path()).unwrap();
+        let attributes = file_meta.file_attributes(); 
+        if attributes & FILE_ATTRIBUTE_HIDDEN > 0 && !flags.show_hidden {
+            continue;
+        }
+        let file_size = file_meta.file_size();
+         
+        let os_file_path = &item.file_name();
+        let mut file_name: ColoredString = os_file_path.to_str().unwrap().into();
+        if file_meta.is_dir() {
+            file_name = file_name.purple();
+        } else if file_meta.is_file() {
+            file_name = file_name.green();
+        } else {
+            file_name = file_name.red();
+        }
+
+        let permissions = file_meta.permissions();
+        let read_only = if permissions.readonly() {"Read-Only"} else {""}; 
+        println!("{:>10} {:>10} {:>20}", &read_only, &file_size, &file_name);
+    }
 }
 
 fn simple_print(entries: &DirItems, flags: &UsedFlags) {
